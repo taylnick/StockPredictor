@@ -54,6 +54,10 @@ def getX(file):
         split_line = line.split(',')
 
         dat = [None] * 5
+
+        # Date,Open,High,Low,Close,Volume,OpenInt
+        # 0    1    2    3   4     5      6
+
         # dat[0] = split_line[0]
         dat[0] = float(split_line[1])
         dat[1] = float(split_line[2])
@@ -63,6 +67,41 @@ def getX(file):
         # dat[6] = int(split_line[6])
 
         X[j-1] = dat
+        print(", ".join(map(str, dat)))
+
+    return X
+
+def buildDataMatrix(file, window_size):
+    text_file = open(data_dir + '/' + file, 'r')
+    print(file)
+    lines = text_file.readlines()
+
+    X = [None] * (len(lines) - 1)
+
+    # remove newlines https://stackoverflow.com/questions/43447221/removing-all-spaces-in-text-file-with-python-3-x
+    lines = [line.replace('\n', '') for line in lines]
+
+    for j, line in enumerate(lines):
+        # first line is just column labels
+        if j == 0:
+            continue
+
+        split_line = line.split(',')
+
+        dat = [None] * 5
+
+        # Date,Open,High,Low,Close,Volume,OpenInt
+        # 0    1    2    3   4     5      6
+
+        # dat[0] = split_line[0]
+        dat[0] = float(split_line[1])
+        dat[1] = float(split_line[2])
+        dat[2] = float(split_line[3])
+        dat[3] = float(split_line[4])
+        dat[4] = int(split_line[5])
+        # dat[6] = int(split_line[6])
+
+        X[j - 1] = dat
         print(", ".join(map(str, dat)))
 
     return X
