@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import LinearRegression
 import sklearn.metrics as met
 # import tensorflow as tf
@@ -89,10 +90,13 @@ def print_data(X, y):
     for x in range(len(X)):
         print(','.join(map(str, X[x])) + ' -> ' + y[x])
 
-def linear_regression_predict(x, y):
+def linear_regression_predict(X_train, X_test, y_train, y_test):
     # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
     lin_reg = LinearRegression().fit(X_train, y_train)
     return lin_reg.predict(X_test)
+def mlp_regression_predict(X_train, X_test, y_train, y_test):
+    mlp_reg = MLPRegressor().fit(X_train, y_train)
+    return mlp_reg.predict(X_test)
 
 files = get_stock_subset_num(5)
 for file in files:
@@ -105,7 +109,8 @@ for file in files:
     # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
-    y_pred = linear_regression_predict(X_test, y_test)
+    y_pred = linear_regression_predict(X_train, X_test, y_train, y_test)
+    # y_pred = mlp_regression_predict(X_train, X_test, y_train, y_test)
 
     mse = met.mean_squared_error(y_test, y_pred)
 
