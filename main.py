@@ -77,7 +77,17 @@ def build_np_matrix(file, window_size):
         features.append(row)
 
         # target is the closing price of the next day
-        labels.append(float(lines[x + window_size].split(',')[4]))
+        # labels.append(float(lines[x + window_size].split(',')[4]))
+
+        # instead, target is the the percentage increase for the closing price the next day
+        next_day = lines[x + window_size].split(',')
+        next_day_close = float(next_day[4])
+        prev_day = lines[x + window_size - 1].split(',')
+        prev_day_close = float(prev_day[4])
+        difference = next_day_close - prev_day_close
+        percent_increase = difference / prev_day_close
+        labels.append(percent_increase)
+
 
     return np.array(features), np.array(labels)
 
@@ -177,7 +187,7 @@ for file in files:
     X, y = build_np_matrix(file, window_size)
 
     # normalize
-    normalize(X, axis=1)
+    X = normalize(X, axis=1)
 
 
     # dfx = pd.DataFrame(X)
@@ -192,9 +202,9 @@ for file in files:
 
 
 
-    # y_pred = linear_regression_predict(X_train, X_test, y_train, y_test)
+    y_pred = linear_regression_predict(X_train, X_test, y_train, y_test)
     #y_pred = mlp_regression_predict(X_train, X_test, y_train, y_test)
-    y_pred = LSTM_predict(X_train, X_test, y_train, y_test)
+    # y_pred = LSTM_predict(X_train, X_test, y_train, y_test)
 
     mse = met.mean_squared_error(y_test, y_pred)
 
