@@ -12,6 +12,7 @@ from sklearn.preprocessing import normalize
 
 data_dir = 'Data/Stocks'
 all_files = os.listdir(data_dir)
+np.random.seed(43)
 
 def get_stock_subset_ratio(ratio):
     num_requested = int(len(all_files) * ratio)
@@ -169,12 +170,11 @@ def LSTM_predict(X_train, X_test, y_train, y_test):
 
 def linear_regression_predict(X_train, X_test, y_train, y_test):
     # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
-    lin_reg = LinearRegression().fit(X_train, y_train)
+    lin_reg = LinearRegression(normalize=True).fit(X_train, y_train)
     return lin_reg.predict(X_test)
 def mlp_regression_predict(X_train, X_test, y_train, y_test):
-    mlp_reg = MLPRegressor(hidden_layer_sizes=(50, 2)).fit(X_train, y_train)
-
-    return mlp_reg.predict(X_test)
+    mlp_reg = MLPRegressor(activation='logistic', max_iter=5000000, hidden_layer_sizes=()).fit(X_train, y_train)
+    return mlp_reg, mlp_reg.predict(X_test)
 
 def rise_or_fall_accuracy(y_true, y_pred):
     count = 0
@@ -189,15 +189,14 @@ def rise_or_fall_accuracy(y_true, y_pred):
 files = get_stock_subset_num(5)
 for file in files:
     print(file)
-    window_size = 5
+    window_size = 1
 
     # print_file(file, 10)
     # X, y = build_data_matrix(file, window_size)
     X, y = build_np_matrix(file, window_size)
 
     # normalize
-    X = normalize(X, axis=1)
-
+    # X = normalize(X, axis=1)
 
     # dfx = pd.DataFrame(X)
     # dfy = pd.DataFrame(y)
@@ -212,11 +211,20 @@ for file in files:
 
 
     y_pred = linear_regression_predict(X_train, X_test, y_train, y_test)
-    #y_pred = mlp_regression_predict(X_train, X_test, y_train, y_test)
+    # mlp, y_pred = mlp_regression_predict(X_train, X_train, y_train, y_test)
     # y_pred = LSTM_predict(X_train, X_test, y_train, y_test)
 
+    # print(mlp.n_iter_)
+
+    # TODO print mean squared error per iteration
+    # report both
+    # average multiple (~10) runs on one stock or take best run
+    # test more on bibl.us.txt
+
+    # mse = met.mean_squared_error(y_test, y_pred)
     mse = met.mean_squared_error(y_test, y_pred)
 
+    # acc = rise_or_fall_accuracy(y_test, y_pred)
     acc = rise_or_fall_accuracy(y_test, y_pred)
 
     print("Mean Squared Error           : " + str(mse))
