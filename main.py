@@ -176,6 +176,15 @@ def mlp_regression_predict(X_train, X_test, y_train, y_test):
 
     return mlp_reg.predict(X_test)
 
+def rise_or_fall_accuracy(y_true, y_pred):
+    count = 0
+    for i in range(len(y_true)):
+        if y_true[i] >= 0 and y_pred[i] >= 0:
+            count += 1
+        elif y_true[i] < 0 and y_pred[i] < 0:
+            count += 1
+    return (count / len(y_true)) * 100
+
 
 files = get_stock_subset_num(5)
 for file in files:
@@ -208,4 +217,7 @@ for file in files:
 
     mse = met.mean_squared_error(y_test, y_pred)
 
-    print("MSE: " + str(mse) + "\n")
+    acc = rise_or_fall_accuracy(y_test, y_pred)
+
+    print("Mean Squared Error           : " + str(mse))
+    print("Predictive Gain/Loss accuracy: " + str(acc) + "\n")
